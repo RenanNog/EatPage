@@ -1,0 +1,136 @@
+import { useState } from 'react';
+import { login, api } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Utensils } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login: setAuth } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await login({ username, password });
+      const { access_token, refresh_token } = response.data;
+      localStorage.setItem('refresh_token', refresh_token);
+      setAuth(access_token);
+      navigate('/employees');
+      toast({
+        title: 'Bem-vindo!',
+        description: 'Login realizado com sucesso.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao fazer login',
+        description: error.response?.data?.message || 'Credenciais inválidas.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckStatus = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/api/status');
+      toast({
+        title: 'Status da API',
+        description: JSON.stringify(response.data),
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível verificar o status da API.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+      <div className="w-full max-w-md space-y-8">
+        {/* Logo */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-glow">
+            <Utensils className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            EatPass
+          </h1>
+          <p className="text-muted-foreground">Sistema de Gerenciamento de Refeições</p>
+        </div>
+
+        {/* Login Form */}
+        <div className="bg-card border border-border rounded-xl p-8 shadow-card space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Usuário (E-mail)</Label>
+              <Input
+                id="username"
+                type="email"
+                placeholder="seu@email.com"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Entrar
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Ou</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleCheckStatus}
+            disabled={loading}
+          >
+            Verificar Status da API
+          </Button>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          © 2025 EatPass. Todos os direitos reservados.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
