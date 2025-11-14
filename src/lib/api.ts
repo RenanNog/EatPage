@@ -87,14 +87,21 @@ export const deleteEmployee = (assetId: string) =>
   api.delete(`/api/employees/${assetId}`);
 
 // Meals
-export const setMealPassword = (assetId: string, password: string) =>
-  api.post(`/api/employees/${assetId}/set-password`, { password });
+export function setMealPassword(assetId: string, password: string) {
+  return api.post(`/api/employees/${assetId}/set-password`, { password });
+}
 
-export const registerMeal = (assetId: string, mealType: string, password: string) =>
-  api.post(`/api/employees/${assetId}/register-meal`, { meal_type: mealType, password });
+export function registerMeal(assetId: string, mealType: string, password: string) {
+  return api.post(`/api/employees/${assetId}/register-meal`, {
+    meal_type: mealType,
+    password
+  });
+}
 
-export const getMealsReport = (startTs: number, endTs: number, assetId?: string) => {
-  const params: any = { start_ts: startTs, end_ts: endTs };
-  if (assetId) params.asset_id = assetId;
+export function getMealsReport(startTs: number, endTs: number, assetId?: string) {
+  const params: Record<string, any> = { start_ts: startTs, end_ts: endTs };
+  if (assetId) {
+    params.asset_id = assetId;
+  }
   return api.get<MealReport[]>('/api/employees/meals-report', { params });
-};
+}

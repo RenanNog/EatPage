@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteEmployee, setMealPassword, registerMeal, type Employee } from '@/lib/api';
+import { deleteEmployee, type Employee, api } from '@/lib/api';
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,10 @@ export const EmployeeOptionsModal = ({
 
     setLoading(true);
     try {
-      await registerMeal(employee.id, 'Refeição', mealPassword);
+      await api.post(`/api/employees/${employee.id}/register-meal`, {
+        meal_type: 'Refeição',
+        password: mealPassword
+      });
       toast({
         title: 'Sucesso',
         description: 'Refeição registrada com sucesso!',
@@ -81,7 +84,7 @@ export const EmployeeOptionsModal = ({
 
     setLoading(true);
     try {
-      await setMealPassword(employee.id, password);
+      await api.post(`/api/employees/${employee.id}/set-password`, { password });
       toast({
         title: 'Sucesso',
         description: 'Senha de refeição definida com sucesso!',
