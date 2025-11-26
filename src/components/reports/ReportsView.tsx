@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Calendar } from 'lucide-react';
+import { Loader2, Calendar, Download, TrendingUp } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 import { useSearchParams } from 'react-router-dom';
@@ -114,6 +114,52 @@ export const ReportsView = () => {
     ],
   };
 
+  // Today's meals count
+  const todayMeals = useMemo(() => {
+    const today = new Date().toLocaleDateString('pt-BR');
+    return reports.filter((r) => new Date(r.timestamp).toLocaleDateString('pt-BR') === today).length;
+  }, [reports]);
+
+  // Export to CSV
+  const handleExportCSV = () => {
+    if (reports.length === 0) {
+      toast({
+        title: 'Erro',
+        description: 'Não há dados para exportar.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const headers = ['Funcionário', 'Setor', 'Tipo de Refeição', 'Data e Hora'];
+    const rows = reports.map((r) => [
+      r.employee_name,
+      r.employee_setor || '-',
+      r.meal_type,
+      new Date(r.timestamp).toLocaleString('pt-BR'),
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `relatorio-refeicoes-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: 'Sucesso',
+      description: 'Relatório exportado com sucesso.',
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -152,11 +198,37 @@ export const ReportsView = () => {
             </div>
           </div>
         </div>
-        <Button onClick={() => handleGenerate()} disabled={loading} className="w-full md:w-auto">
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Gerar Relatório Geral
-        </Button>
+        <div className="flex flex-col md:flex-row gap-3">
+          <Button onClick={() => handleGenerate()} disabled={loading} className="flex-1 md:flex-none">
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Gerar Relatório Geral
+          </Button>
+          <Button
+            onClick={handleExportCSV}
+            disabled={loading || reports.length === 0}
+            variant="outline"
+            className="flex-1 md:flex-none"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Exportar CSV
+          </Button>
+        </div>
       </div>
+
+      {/* Today's Summary Card */}
+      {reports.length > 0 && (
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Total de Refeições Hoje</p>
+              <p className="text-4xl font-bold text-primary">{todayMeals}</p>
+            </div>
+            <div className="bg-primary/20 rounded-full p-4">
+              <TrendingUp className="h-8 w-8 text-primary" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Charts */}
       {reports.length > 0 && (
