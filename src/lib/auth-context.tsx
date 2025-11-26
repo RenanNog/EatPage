@@ -5,7 +5,7 @@ import type { UserProfile } from './api';
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  login: (token: string) => void;
+  login: (token: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -39,9 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchUser();
   }, []);
 
-  const login = (token: string) => {
+  const login = async (token: string) => {
     localStorage.setItem('access_token', token);
-    fetchUser();
+    await fetchUser();
   };
 
   const logout = () => {
