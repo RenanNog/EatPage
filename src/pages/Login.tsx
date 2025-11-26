@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login, api } from '@/lib/api';
+import { login } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ const Login = () => {
       const response = await login({ username, password });
       const { access_token, refresh_token } = response.data;
       localStorage.setItem('refresh_token', refresh_token);
-      setAuth(access_token);
+      await setAuth(access_token);
       navigate('/employees');
       toast({
         title: 'Bem-vindo!',
@@ -34,25 +34,6 @@ const Login = () => {
       toast({
         title: 'Erro ao fazer login',
         description: error.response?.data?.message || 'Credenciais inválidas.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCheckStatus = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get('/api/status');
-      toast({
-        title: 'Status da API',
-        description: JSON.stringify(response.data),
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro',
-        description: 'Não foi possível verificar o status da API.',
         variant: 'destructive',
       });
     } finally {
@@ -104,25 +85,6 @@ const Login = () => {
               Entrar
             </Button>
           </form>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Ou</span>
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleCheckStatus}
-            disabled={loading}
-          >
-            Verificar Status da API
-          </Button>
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
