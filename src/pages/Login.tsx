@@ -50,21 +50,21 @@ const Login = () => {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center mb-4">
+          <div className="inline-flex items-center justify-center mb-4 animate-fade-in">
             <img 
               src={theme === 'dark' ? logoDark : logoLight} 
               alt="EatPass Logo" 
               className="w-24 h-24 object-contain"
             />
           </div>
-          <h1 className="text-4xl font-bold text-foreground">
+          <h1 className="text-4xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
             EatPass
           </h1>
-          <p className="text-muted-foreground">Sistema de Gerenciamento de Refeições</p>
+          <p className="text-muted-foreground animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>Sistema de Gerenciamento de Refeições</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-card border border-border rounded-xl p-8 shadow-card space-y-6">
+        <div className="bg-card border border-border rounded-xl p-8 shadow-card space-y-6 animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username">Usuário (E-mail)</Label>
