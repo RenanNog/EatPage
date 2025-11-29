@@ -3,6 +3,7 @@ import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import logo from '@/assets/logo.png';
 
 export const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -22,20 +23,21 @@ export const Sidebar = () => {
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">E</span>
-            </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="EatPass Logo" className="w-10 h-10 object-contain" />
+            <span className="text-lg font-bold text-sidebar-foreground">
               EatPass
             </span>
           </div>
+        )}
+        {collapsed && (
+          <img src={logo} alt="EatPass Logo" className="w-8 h-8 object-contain mx-auto" />
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8"
+          className="h-8 w-8 ml-auto"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
