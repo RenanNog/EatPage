@@ -5,8 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Utensils } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from 'next-themes';
+import logoLight from '@/assets/logo-light.png';
+import logoDark from '@/assets/logo-dark.png';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -15,6 +18,7 @@ const Login = () => {
   const { login: setAuth } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +50,14 @@ const Login = () => {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-glow">
-            <Utensils className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img 
+              src={theme === 'dark' ? logoDark : logoLight} 
+              alt="EatPass Logo" 
+              className="w-24 h-24 object-contain"
+            />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-foreground">
             EatPass
           </h1>
           <p className="text-muted-foreground">Sistema de Gerenciamento de Refeições</p>
