@@ -1,13 +1,16 @@
-import { Users, FileText, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, FileText, LogOut, ChevronLeft, ChevronRight, Sun, Moon } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import logo from '@/assets/logo.png';
+import { useTheme } from 'next-themes';
+import logoLight from '@/assets/logo-light.png';
+import logoDark from '@/assets/logo-dark.png';
 
 export const Sidebar = () => {
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const navItems = [
     { to: '/employees', icon: Users, label: 'Funcionários' },
@@ -24,14 +27,22 @@ export const Sidebar = () => {
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <img src={logo} alt="EatPass Logo" className="w-10 h-10 object-contain" />
+            <img 
+              src={theme === 'dark' ? logoDark : logoLight} 
+              alt="EatPass Logo" 
+              className="w-10 h-10 object-contain" 
+            />
             <span className="text-lg font-bold text-sidebar-foreground">
               EatPass
             </span>
           </div>
         )}
         {collapsed && (
-          <img src={logo} alt="EatPass Logo" className="w-8 h-8 object-contain mx-auto" />
+          <img 
+            src={theme === 'dark' ? logoDark : logoLight} 
+            alt="EatPass Logo" 
+            className="w-8 h-8 object-contain mx-auto" 
+          />
         )}
         <Button
           variant="ghost"
@@ -59,8 +70,8 @@ export const Sidebar = () => {
       </nav>
 
       {/* User Section */}
-      <div className="p-3 border-t border-sidebar-border">
-        <div className={`flex items-center gap-3 px-3 py-2 mb-2 ${collapsed ? 'justify-center' : ''}`}>
+      <div className="p-3 border-t border-sidebar-border space-y-2">
+        <div className={`flex items-center gap-3 px-3 py-2 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
             <span className="text-primary text-sm font-medium">
               {user?.firstName?.charAt(0) || user?.email?.charAt(0) || '?'}
@@ -75,6 +86,16 @@ export const Sidebar = () => {
             </div>
           )}
         </div>
+        
+        <Button
+          variant="ghost"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className={`w-full justify-start ${collapsed ? 'px-0 justify-center' : ''}`}
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {!collapsed && <span className="ml-2">{theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}</span>}
+        </Button>
+
         <Button
           variant="ghost"
           onClick={logout}
