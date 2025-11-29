@@ -120,6 +120,24 @@ export const ReportsView = () => {
     return reports.filter((r) => new Date(r.timestamp).toLocaleDateString('pt-BR') === today).length;
   }, [reports]);
 
+  // Weekly meals count (last 7 days)
+  const weeklyMeals = useMemo(() => {
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return reports.filter((r) => new Date(r.timestamp) >= weekAgo).length;
+  }, [reports]);
+
+  // Monthly meals count (current month)
+  const monthlyMeals = useMemo(() => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    return reports.filter((r) => {
+      const date = new Date(r.timestamp);
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    }).length;
+  }, [reports]);
+
   // Export to CSV
   const handleExportCSV = () => {
     if (reports.length === 0) {
@@ -215,16 +233,48 @@ export const ReportsView = () => {
         </div>
       </div>
 
-      {/* Today's Summary Card */}
+      {/* Summary Cards */}
       {reports.length > 0 && (
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Total de Refeições Hoje</p>
-              <p className="text-4xl font-bold text-primary">{todayMeals}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Daily Total */}
+          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total Diário</p>
+                <p className="text-4xl font-bold text-primary">{todayMeals}</p>
+                <p className="text-xs text-muted-foreground mt-1">Hoje</p>
+              </div>
+              <div className="bg-primary/20 rounded-full p-4">
+                <TrendingUp className="h-8 w-8 text-primary" />
+              </div>
             </div>
-            <div className="bg-primary/20 rounded-full p-4">
-              <TrendingUp className="h-8 w-8 text-primary" />
+          </div>
+
+          {/* Weekly Total */}
+          <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total Semanal</p>
+                <p className="text-4xl font-bold text-blue-500">{weeklyMeals}</p>
+                <p className="text-xs text-muted-foreground mt-1">Últimos 7 dias</p>
+              </div>
+              <div className="bg-blue-500/20 rounded-full p-4">
+                <Calendar className="h-8 w-8 text-blue-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Monthly Total */}
+          <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total Mensal</p>
+                <p className="text-4xl font-bold text-purple-500">{monthlyMeals}</p>
+                <p className="text-xs text-muted-foreground mt-1">Mês atual</p>
+              </div>
+              <div className="bg-purple-500/20 rounded-full p-4">
+                <TrendingUp className="h-8 w-8 text-purple-500" />
+              </div>
             </div>
           </div>
         </div>
